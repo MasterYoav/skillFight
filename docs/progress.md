@@ -12,7 +12,9 @@ Steps toward a perfect skillfight. Each step ships something that runs.
 - [x] **Step 4 — TUI arena.** Ink renders the verdict as the fighting arena (KO / merge / coexist),
       importance-tagged skill cards, recommendations, and a live token counter. `--demo` runs without a key.
       Entry: `skillfight <path>` (bin) / `pnpm --filter @skillfight/tui start <path>`.
-- [ ] **Step 5 — Web app.** React + Vite reusing the same ASCII components; responsive to phone.
+- [x] **Step 5 — Web app.** React + Vite renders the same arena in an HTML/CSS monospace skin,
+      responsive to phone. Loads a `verdict.json` (drag-drop / file picker) or the bundled demo.
+      Type-only `Verdict` import keeps core's Node code out of the browser bundle.
 - [ ] **Step 6 — Providers 2 & 3.** OpenAI, local (Ollama/MLX) + graceful "tokens n/a".
 - [ ] **Step 7 — Docs + OSS hygiene.** README install/usage, CONTRIBUTING, license.
 

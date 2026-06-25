@@ -1,0 +1,103 @@
+:root {
+  --bg: #0b0d10;
+  --fg: #d7dde3;
+  --dim: #6b7682;
+  --line: #232a31;
+  --magenta: #d65cff;
+  --green: #58e06a;
+  --red: #ff5c6a;
+  --yellow: #e8c84a;
+  --cyan: #4ad6e8;
+  --imp1: #6b7682;
+  --imp2: #8b96a2;
+  --imp3: #d7dde3;
+  --imp4: #e8c84a;
+  --imp5: #ff5c6a;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: ui-monospace, "SF Mono", Menlo, "DejaVu Sans Mono", monospace;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.page {
+  min-height: 100vh;
+  max-width: 760px;
+  margin: 0 auto;
+  padding: clamp(12px, 4vw, 32px);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.arena { display: flex; flex-direction: column; gap: 16px; }
+
+.hdr {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 12px;
+}
+.title { color: var(--magenta); font-weight: 700; letter-spacing: 1px; }
+.stats { color: var(--dim); }
+
+h2 {
+  margin: 0 0 6px;
+  font-size: 13px;
+  letter-spacing: 2px;
+  color: var(--dim);
+  font-weight: 700;
+}
+
+.panel {
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 12px 14px;
+}
+.block { padding: 0 2px; }
+
+p { margin: 2px 0; }
+.dim { color: var(--dim); }
+.rationale { padding-left: 14px; }
+
+.fight + .fight { margin-top: 12px; }
+.fight p:first-child { font-weight: 600; }
+
+.winner { color: var(--green); font-weight: 700; }
+.loser { color: var(--red); text-decoration: line-through; opacity: 0.7; }
+.swords { color: var(--red); }
+.merge { color: var(--yellow); }
+.coexist { color: var(--cyan); }
+
+.card { margin-top: 12px; }
+.cardhead { font-weight: 600; }
+.imp { font-weight: 700; }
+.imp-1 { color: var(--imp1); }
+.imp-2 { color: var(--imp2); }
+.imp-3 { color: var(--imp3); }
+.imp-4 { color: var(--imp4); }
+.imp-5 { color: var(--imp5); }
+.pro { color: var(--green); }
+.con { color: var(--red); }
+.bullet { color: var(--cyan); }
+
+.foot {
+  margin-top: 8px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--line);
+  color: var(--dim);
+  font-size: 13px;
+}
+.foot code { color: var(--fg); }
+.link { color: var(--cyan); cursor: pointer; text-decoration: underline; }
+.link:hover { color: var(--green); }
+
+@media (max-width: 480px) {
+  html, body { font-size: 13px; }
+}
