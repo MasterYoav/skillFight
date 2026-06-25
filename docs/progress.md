@@ -18,7 +18,8 @@ Steps toward a perfect skillfight. Each step ships something that runs.
 - [x] **Step 6 — Providers 2 & 3.** `OpenAICompatibleProvider` covers OpenAI and local
       (Ollama/LM Studio/MLX) over one impl; usage degrades to "n/a" when the server reports none.
       `createProvider(anthropic|openai|local)` factory wired into the CLI and TUI (env-configured).
-- [ ] **Step 7 — Docs + OSS hygiene.** README install/usage, CONTRIBUTING, license.
+- [x] **Step 7 — Docs + OSS hygiene.** Full README (install/use/providers/library/layout),
+      CONTRIBUTING, MIT LICENSE, and top-level scripts (`analyze`, `tui`, `tui:demo`, `web`).
 
 ## Notes
 - A "conflict" = overlapping trigger semantics in skill `description`s (both would fire for the same request).

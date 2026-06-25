@@ -8,6 +8,10 @@
   "scripts": {
     "test": "pnpm -r test",
     "build": "pnpm -r build",
-    "typecheck": "pnpm -r typecheck"
+    "typecheck": "pnpm -r typecheck",
+    "analyze": "pnpm --filter @skillfight/core analyze",
+    "tui": "pnpm --filter @skillfight/tui start",
+    "tui:demo": "pnpm --filter @skillfight/tui demo",
+    "web": "pnpm --filter @skillfight/web dev"
   }
 }
