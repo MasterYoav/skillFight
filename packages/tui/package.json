@@ -1,0 +1,23 @@
+{
+  "name": "@skillfight/tui",
+  "version": "0.0.0",
+  "type": "module",
+  "bin": { "skillfight": "./dist/cli.js" },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "start": "tsx src/cli.tsx",
+    "demo": "tsx src/cli.tsx --demo"
+  },
+  "dependencies": {
+    "@skillfight/core": "workspace:*",
+    "ink": "^5.1.0",
+    "react": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "@types/react": "^18.3.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0"
+  }
+}
