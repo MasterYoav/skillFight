@@ -1,22 +1,22 @@
 import { useEffect, useState } from "react";
 import { Box, Text, useApp } from "ink";
-import { analyzePath, AnthropicProvider, type Verdict } from "@skillfight/core";
+import { analyzePath, createProvider, type ProviderName, type Verdict } from "@skillfight/core";
 import { Arena } from "./Arena.js";
 
 const FRAMES = ["◐", "◓", "◑", "◒"];
 
 /** Loads + analyzes a skills path, showing a spinner, then renders the Arena. */
-export function App({ path }: { path: string }) {
+export function App({ path, provider }: { path: string; provider?: ProviderName }) {
   const { exit } = useApp();
   const [verdict, setVerdict] = useState<Verdict | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [frame, setFrame] = useState(0);
 
   useEffect(() => {
-    analyzePath(path, new AnthropicProvider())
+    analyzePath(path, createProvider(provider))
       .then(setVerdict)
       .catch((e) => setError(e instanceof Error ? e.message : String(e)));
-  }, [path]);
+  }, [path, provider]);
 
   useEffect(() => {
     if (verdict || error) {

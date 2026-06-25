@@ -15,7 +15,9 @@ Steps toward a perfect skillfight. Each step ships something that runs.
 - [x] **Step 5 — Web app.** React + Vite renders the same arena in an HTML/CSS monospace skin,
       responsive to phone. Loads a `verdict.json` (drag-drop / file picker) or the bundled demo.
       Type-only `Verdict` import keeps core's Node code out of the browser bundle.
-- [ ] **Step 6 — Providers 2 & 3.** OpenAI, local (Ollama/MLX) + graceful "tokens n/a".
+- [x] **Step 6 — Providers 2 & 3.** `OpenAICompatibleProvider` covers OpenAI and local
+      (Ollama/LM Studio/MLX) over one impl; usage degrades to "n/a" when the server reports none.
+      `createProvider(anthropic|openai|local)` factory wired into the CLI and TUI (env-configured).
 - [ ] **Step 7 — Docs + OSS hygiene.** README install/usage, CONTRIBUTING, license.
 
 ## Notes
