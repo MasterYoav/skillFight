@@ -12,6 +12,8 @@
     "analyze": "pnpm --filter @skillfight/core analyze",
     "tui": "pnpm --filter @skillfight/tui start",
     "tui:demo": "pnpm --filter @skillfight/tui demo",
-    "web": "pnpm --filter @skillfight/web dev"
+    "web": "pnpm --filter @skillfight/web dev",
+    "start": "pnpm --filter @skillfight/server start",
+    "dev": "pnpm --filter @skillfight/server dev & pnpm --filter @skillfight/web dev"
   }
 }

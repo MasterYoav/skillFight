@@ -1,4 +1,4 @@
-import type { ProviderPrompt, Skill } from "./types.js";
+import { ARCHETYPES, type ProviderPrompt, type Skill } from "./types.js";
 
 const SYSTEM = `You are an analyst of Claude skills. A "skill" is a unit of instructions \
 Claude loads on demand; its description decides when it fires. Two skills "conflict" \
@@ -8,6 +8,16 @@ over Claude's behavior.
 Analyze the skills given and return ONLY a JSON object matching the provided schema:
 - For each skill: the problem(s) it solves, its pros and cons, and an importance from \
 1 (nice-to-have) to 5 (critical) to solving its problem.
+- Classify each skill's archetype by what it actually does: blade (direct action / \
+execution), mage (content generation / creative), guardian (review / safety / validation), \
+scout (search / research / discovery), engineer (build / code / tooling), oracle (data / \
+analysis / insight), courier (communication / integration), warden (files / documents / \
+organization).
+- Give each skill exactly 3 stats, each a short one-word trait named for the skill's own \
+domain (a UI skill might get Style, Clarity, Motion; a security skill Defence, Coverage, \
+Rigor; a git skill Precision, Safety, Speed), scored 0 (absent) to 100 (exceptional) based \
+on how well the skill's actual content delivers that trait. Never reuse a generic \
+HP/attack/defense framing.
 - Group overlapping skills into conflicts. For each, decide "winner" (one dominates — \
 name it), "merge" (fold into one), or "coexist" (no real conflict). Give a rationale \
 and cite the specific description/body text that backs it.
@@ -35,8 +45,21 @@ export const VERDICT_SCHEMA: Record<string, unknown> = {
           pros: { type: "array", items: { type: "string" } },
           cons: { type: "array", items: { type: "string" } },
           importance: { type: "integer", enum: [1, 2, 3, 4, 5] },
+          archetype: { type: "string", enum: [...ARCHETYPES] },
+          stats: {
+            type: "array",
+            items: {
+              type: "object",
+              additionalProperties: false,
+              properties: {
+                name: { type: "string" },
+                score: { type: "integer" },
+              },
+              required: ["name", "score"],
+            },
+          },
         },
-        required: ["name", "problems", "pros", "cons", "importance"],
+        required: ["name", "problems", "pros", "cons", "importance", "archetype", "stats"],
       },
     },
     conflicts: {

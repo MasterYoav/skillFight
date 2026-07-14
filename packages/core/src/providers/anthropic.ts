@@ -1,7 +1,7 @@
 import Anthropic from "@anthropic-ai/sdk";
 import type { AnalyzeResult, Provider, ProviderPrompt, TokenUsage } from "../types.js";
 
-const MODEL = "claude-opus-4-8";
+const DEFAULT_MODEL = "claude-opus-4-8";
 
 /**
  * Anthropic-backed provider. Credentials resolve the SDK's normal way —
@@ -11,20 +11,24 @@ const MODEL = "claude-opus-4-8";
 export class AnthropicProvider implements Provider {
   readonly name = "anthropic";
   private readonly client: Anthropic;
+  private readonly model: string;
+  private readonly effort?: string;
 
-  constructor(client = new Anthropic()) {
+  constructor(opts: { model?: string; effort?: string } = {}, client = new Anthropic()) {
     this.client = client;
+    this.model = opts.model || DEFAULT_MODEL;
+    this.effort = opts.effort;
   }
 
   async analyze(prompt: ProviderPrompt): Promise<AnalyzeResult> {
     const message = await this.client.messages.create({
-      model: MODEL,
+      model: this.model,
       // ponytail: 16K keeps us under the SDK's non-streaming HTTP timeout; switch
       // to .stream() if a huge skill corpus pushes the verdict past this.
       max_tokens: 16000,
       thinking: { type: "adaptive" },
       output_config: {
-        effort: "high",
+        effort: (this.effort as "low" | "medium" | "high" | "max" | undefined) ?? "high",
         ...(prompt.jsonSchema && { format: { type: "json_schema", schema: prompt.jsonSchema } }),
       },
       system: prompt.system,

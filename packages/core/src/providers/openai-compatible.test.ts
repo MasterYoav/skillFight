@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { parseOpenAIResponse } from "./openai-compatible.js";
+import { assertNonEmpty, parseOpenAIResponse } from "./openai-compatible.js";
 import { createProvider } from "./factory.js";
 
 describe("parseOpenAIResponse", () => {
@@ -16,6 +16,28 @@ describe("parseOpenAIResponse", () => {
     const result = parseOpenAIResponse({ choices: [{ message: { content: "{}" } }], usage: null });
     expect(result.text).toBe("{}");
     expect(result.usage).toEqual({ inputTokens: undefined, outputTokens: undefined });
+  });
+});
+
+describe("assertNonEmpty", () => {
+  it("passes through non-empty content", () => {
+    expect(() =>
+      assertNonEmpty({ choices: [{ message: { content: "{}" } }] }, "local", "llama3.1"),
+    ).not.toThrow();
+  });
+
+  it("throws with the finish_reason when a reasoning model burns its budget on thinking", () => {
+    expect(() =>
+      assertNonEmpty(
+        { choices: [{ message: { content: "" }, finish_reason: "length" }] },
+        "local",
+        "gpt-oss-20b-MXFP4",
+      ),
+    ).toThrow(/finish_reason: length/);
+  });
+
+  it("throws on a missing message entirely", () => {
+    expect(() => assertNonEmpty({ choices: [] }, "local", "llama3.1")).toThrow(/empty response/);
   });
 });
 

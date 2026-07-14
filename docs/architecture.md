@@ -21,6 +21,15 @@ corpus fits in one model context.
 - **`apps/web`** *(Step 5)* — React + Vite renderer sharing core's types and the
   ASCII components.
 
+## Two lenses, one engine
+- **Arena / conflict** (`analyzeSkills` → `Verdict`) — which skills *overlap* and
+  fight, decided statically from their descriptions.
+- **Trials / routing** (`routeTasks` → `RoutingReport`) — given real tasks, which
+  skill *fires* for each. One LLM call scores skill×task; the engine derives **hit**
+  (one skill clears the fire threshold), **contested** (two do — a trigger fight),
+  and **gap** (none do — a coverage hole). This is the "best skill for what task"
+  view. Both lenses are stateless single calls sharing the provider abstraction.
+
 ## Key decisions
 - **Conflict = description overlap.** Two skills fight when their `description`
   trigger semantics overlap. Detected by one orchestrated LLM call over all

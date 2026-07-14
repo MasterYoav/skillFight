@@ -3,4 +3,8 @@ import react from "@vitejs/plugin-react";
 
 export default defineConfig({
   plugins: [react()],
+  server: {
+    // Forward API calls to the skillfight server in dev.
+    proxy: { "/api": "http://localhost:8787" },
+  },
 });

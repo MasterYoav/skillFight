@@ -1,0 +1,440 @@
+{
+  "communities": {
+    "0": [
+      "apps_web_src_api",
+      "apps_web_src_api_analyze",
+      "apps_web_src_api_listlocalmodels",
+      "apps_web_src_api_localmodel",
+      "apps_web_src_api_providerchoice",
+      "apps_web_src_api_scanlocalskills",
+      "apps_web_src_api_skillsource",
+      "apps_web_src_app",
+      "apps_web_src_app_entry",
+      "apps_web_src_app_filesfromdrop",
+      "apps_web_src_app_seed",
+      "apps_web_src_demo",
+      "apps_web_src_demo_demo_sources",
+      "apps_web_src_readskill",
+      "apps_web_src_readskill_rawskill",
+      "apps_web_src_readskill_readskill",
+      "apps_web_src_sprite",
+      "apps_web_src_sprite_sprite",
+      "apps_web_src_warrior",
+      "apps_web_src_warrior_archetypes",
+      "apps_web_src_warrior_hash",
+      "apps_web_src_warrior_makewarrior",
+      "apps_web_src_warrior_palettes",
+      "apps_web_src_warrior_statusfor",
+      "apps_web_src_warrior_warrior",
+      "apps_web_src_warrior_warriorstatus",
+      "apps_web_src_warriorcard",
+      "apps_web_src_warriorcard_bar",
+      "apps_web_src_warriorcard_tag",
+      "apps_web_src_warriorcard_warriorcard"
+    ],
+    "1": [
+      "contributing",
+      "docs_architecture",
+      "docs_progress",
+      "packages_core_src_cli",
+      "packages_core_src_cli_provider",
+      "packages_core_src_providers_AnthropicProvider",
+      "packages_core_src_providers_OpenAICompatibleProvider",
+      "packages_core_src_providers_anthropic",
+      "packages_core_src_providers_anthropic_anthropicprovider",
+      "packages_core_src_providers_anthropic_anthropicprovider_analyze",
+      "packages_core_src_providers_anthropic_anthropicprovider_constructor",
+      "packages_core_src_providers_anthropic_parseanthropicresponse",
+      "packages_core_src_providers_anthropic_test",
+      "packages_core_src_providers_factory",
+      "packages_core_src_providers_factory_createprovider",
+      "packages_core_src_providers_factory_providername",
+      "packages_core_src_providers_openai_compatible",
+      "packages_core_src_providers_openai_compatible_openaicompatibleprovider",
+      "packages_core_src_providers_openai_compatible_openaicompatibleprovider_analyze",
+      "packages_core_src_providers_openai_compatible_openaicompatibleprovider_constructor",
+      "packages_core_src_providers_openai_compatible_openaicompatoptions",
+      "packages_core_src_providers_openai_compatible_parseopenairesponse",
+      "packages_core_src_providers_openai_compatible_test",
+      "packages_core_src_types",
+      "packages_core_src_types_analyzeresult",
+      "packages_core_src_types_provider",
+      "packages_core_src_types_providerprompt",
+      "packages_core_src_types_tokenusage"
+    ],
+    "2": [
+      "packages_core_src_engine",
+      "packages_core_src_engine_analyzepath",
+      "packages_core_src_engine_analyzeskills",
+      "packages_core_src_engine_analyzesources",
+      "packages_core_src_engine_parseverdict",
+      "packages_core_src_engine_skillsource",
+      "packages_core_src_engine_test",
+      "packages_core_src_engine_test_analyze",
+      "packages_core_src_engine_test_skills",
+      "packages_core_src_index",
+      "packages_core_src_parser",
+      "packages_core_src_parser_findmarkdownfiles",
+      "packages_core_src_parser_loadskills",
+      "packages_core_src_parser_normalizetools",
+      "packages_core_src_parser_parseskillfile",
+      "packages_core_src_parser_parseskillsource",
+      "packages_core_src_parser_skillname",
+      "packages_core_src_parser_test",
+      "packages_core_src_parser_test_fixtures",
+      "packages_core_src_prompt",
+      "packages_core_src_prompt_buildprompt",
+      "packages_core_src_prompt_renderskill",
+      "packages_core_src_prompt_verdict_schema",
+      "packages_core_src_types_conflict",
+      "packages_core_src_types_skill",
+      "packages_core_src_types_skillverdict",
+      "packages_core_src_types_verdict"
+    ],
+    "3": [
+      "packages_core_package",
+      "packages_core_package_default",
+      "packages_core_package_dependencies",
+      "packages_core_package_dependencies_anthropic_ai_sdk",
+      "packages_core_package_dependencies_gray_matter",
+      "packages_core_package_dependencies_openai",
+      "packages_core_package_devdependencies",
+      "packages_core_package_devdependencies_tsx",
+      "packages_core_package_devdependencies_types_node",
+      "packages_core_package_devdependencies_typescript",
+      "packages_core_package_devdependencies_vitest",
+      "packages_core_package_exports",
+      "packages_core_package_main",
+      "packages_core_package_name",
+      "packages_core_package_scripts",
+      "packages_core_package_scripts_analyze",
+      "packages_core_package_scripts_build",
+      "packages_core_package_scripts_test",
+      "packages_core_package_scripts_typecheck",
+      "packages_core_package_type",
+      "packages_core_package_types",
+      "packages_core_package_version"
+    ],
+    "4": [
+      "apps_web_package",
+      "apps_web_package_dependencies",
+      "apps_web_package_dependencies_react",
+      "apps_web_package_dependencies_react_dom",
+      "apps_web_package_dependencies_skillfight_core",
+      "apps_web_package_devdependencies",
+      "apps_web_package_devdependencies_types_react",
+      "apps_web_package_devdependencies_types_react_dom",
+      "apps_web_package_devdependencies_typescript",
+      "apps_web_package_devdependencies_vite",
+      "apps_web_package_devdependencies_vitejs_plugin_react",
+      "apps_web_package_name",
+      "apps_web_package_private",
+      "apps_web_package_scripts",
+      "apps_web_package_scripts_build",
+      "apps_web_package_scripts_dev",
+      "apps_web_package_scripts_preview",
+      "apps_web_package_scripts_typecheck",
+      "apps_web_package_type",
+      "apps_web_package_version"
+    ],
+    "5": [
+      "packages_tui_package",
+      "packages_tui_package_bin",
+      "packages_tui_package_bin_skillfight",
+      "packages_tui_package_dependencies",
+      "packages_tui_package_dependencies_ink",
+      "packages_tui_package_dependencies_react",
+      "packages_tui_package_dependencies_skillfight_core",
+      "packages_tui_package_devdependencies",
+      "packages_tui_package_devdependencies_tsx",
+      "packages_tui_package_devdependencies_types_node",
+      "packages_tui_package_devdependencies_types_react",
+      "packages_tui_package_devdependencies_typescript",
+      "packages_tui_package_name",
+      "packages_tui_package_scripts",
+      "packages_tui_package_scripts_build",
+      "packages_tui_package_scripts_demo",
+      "packages_tui_package_scripts_start",
+      "packages_tui_package_scripts_typecheck",
+      "packages_tui_package_type",
+      "packages_tui_package_version"
+    ],
+    "6": [
+      "apps_server_package",
+      "apps_server_package_bin",
+      "apps_server_package_bin_skillfight_server",
+      "apps_server_package_dependencies",
+      "apps_server_package_dependencies_skillfight_core",
+      "apps_server_package_devdependencies",
+      "apps_server_package_devdependencies_tsx",
+      "apps_server_package_devdependencies_types_node",
+      "apps_server_package_devdependencies_typescript",
+      "apps_server_package_name",
+      "apps_server_package_private",
+      "apps_server_package_scripts",
+      "apps_server_package_scripts_build",
+      "apps_server_package_scripts_dev",
+      "apps_server_package_scripts_start",
+      "apps_server_package_scripts_typecheck",
+      "apps_server_package_type",
+      "apps_server_package_version"
+    ],
+    "7": [
+      "package",
+      "package_description",
+      "package_license",
+      "package_name",
+      "package_private",
+      "package_scripts",
+      "package_scripts_analyze",
+      "package_scripts_build",
+      "package_scripts_dev",
+      "package_scripts_start",
+      "package_scripts_test",
+      "package_scripts_tui",
+      "package_scripts_tui_demo",
+      "package_scripts_typecheck",
+      "package_scripts_web",
+      "package_type",
+      "package_version"
+    ],
+    "8": [
+      "packages_tui_src_app",
+      "packages_tui_src_app_app",
+      "packages_tui_src_app_frames",
+      "packages_tui_src_arena",
+      "packages_tui_src_arena_arena",
+      "packages_tui_src_arena_fight",
+      "packages_tui_src_arena_importance_color",
+      "packages_tui_src_arena_skillcard",
+      "packages_tui_src_cli",
+      "packages_tui_src_cli_demo",
+      "packages_tui_src_cli_provider",
+      "packages_tui_src_demo",
+      "packages_tui_src_demo_demo_verdict"
+    ],
+    "9": [
+      "tsconfig_base",
+      "tsconfig_base_compileroptions",
+      "tsconfig_base_compileroptions_declaration",
+      "tsconfig_base_compileroptions_esmoduleinterop",
+      "tsconfig_base_compileroptions_forceconsistentcasinginfilenames",
+      "tsconfig_base_compileroptions_lib",
+      "tsconfig_base_compileroptions_module",
+      "tsconfig_base_compileroptions_moduleresolution",
+      "tsconfig_base_compileroptions_skiplibcheck",
+      "tsconfig_base_compileroptions_strict",
+      "tsconfig_base_compileroptions_target",
+      "tsconfig_base_compileroptions_verbatimmodulesyntax",
+      "tsconfig_base_schema"
+    ],
+    "10": [
+      "apps_server_src_server",
+      "apps_server_src_server_analyze",
+      "apps_server_src_server_json",
+      "apps_server_src_server_localmodel",
+      "apps_server_src_server_localmodels",
+      "apps_server_src_server_mime",
+      "apps_server_src_server_readbody",
+      "apps_server_src_server_scanlocalskills",
+      "apps_server_src_server_server",
+      "apps_server_src_server_servestatic",
+      "apps_server_src_server_web_dir"
+    ],
+    "11": [
+      "apps_web_tsconfig",
+      "apps_web_tsconfig_compileroptions",
+      "apps_web_tsconfig_compileroptions_jsx",
+      "apps_web_tsconfig_compileroptions_lib",
+      "apps_web_tsconfig_compileroptions_noemit",
+      "apps_web_tsconfig_compileroptions_types",
+      "apps_web_tsconfig_extends",
+      "apps_web_tsconfig_include"
+    ],
+    "12": [
+      "packages_core_tsconfig",
+      "packages_core_tsconfig_compileroptions",
+      "packages_core_tsconfig_compileroptions_outdir",
+      "packages_core_tsconfig_compileroptions_rootdir",
+      "packages_core_tsconfig_compileroptions_types",
+      "packages_core_tsconfig_exclude",
+      "packages_core_tsconfig_extends",
+      "packages_core_tsconfig_include"
+    ],
+    "13": [
+      "packages_tui_tsconfig",
+      "packages_tui_tsconfig_compileroptions",
+      "packages_tui_tsconfig_compileroptions_jsx",
+      "packages_tui_tsconfig_compileroptions_outdir",
+      "packages_tui_tsconfig_compileroptions_rootdir",
+      "packages_tui_tsconfig_compileroptions_types",
+      "packages_tui_tsconfig_extends",
+      "packages_tui_tsconfig_include"
+    ],
+    "14": [
+      "apps_server_tsconfig",
+      "apps_server_tsconfig_compileroptions",
+      "apps_server_tsconfig_compileroptions_outdir",
+      "apps_server_tsconfig_compileroptions_rootdir",
+      "apps_server_tsconfig_compileroptions_types",
+      "apps_server_tsconfig_extends",
+      "apps_server_tsconfig_include"
+    ],
+    "15": [
+      "apps_web",
+      "apps_web_index",
+      "apps_web_src_app_app",
+      "apps_web_src_main",
+      "packages_core",
+      "packages_tui",
+      "readme"
+    ],
+    "16": [
+      "apps_web_vite_config"
+    ],
+    "17": [
+      "packages_core_test_fixtures_git_helper_SKILL"
+    ],
+    "18": [
+      "packages_core_test_fixtures_notes"
+    ],
+    "19": [
+      "pnpm_workspace"
+    ]
+  },
+  "cohesion": {
+    "0": 0.11724137931034483,
+    "1": 0.15608465608465608,
+    "2": 0.18518518518518517,
+    "3": 0.09523809523809523,
+    "4": 0.1,
+    "5": 0.1,
+    "6": 0.1111111111111111,
+    "7": 0.11764705882352941,
+    "8": 0.1794871794871795,
+    "9": 0.15384615384615385,
+    "10": 0.2727272727272727,
+    "11": 0.25,
+    "12": 0.25,
+    "13": 0.25,
+    "14": 0.2857142857142857,
+    "15": 0.2857142857142857,
+    "16": 1.0,
+    "17": 1.0,
+    "18": 1.0,
+    "19": 1.0
+  },
+  "gods": [
+    {
+      "id": "packages_core_src_types_provider",
+      "label": "Provider",
+      "degree": 11
+    },
+    {
+      "id": "tsconfig_base_compileroptions",
+      "label": "compilerOptions",
+      "degree": 11
+    },
+    {
+      "id": "package_scripts",
+      "label": "scripts",
+      "degree": 10
+    },
+    {
+      "id": "packages_core_src_parser_parseskillsource",
+      "label": "parseSkillSource()",
+      "degree": 8
+    },
+    {
+      "id": "packages_core_src_engine_analyzeskills",
+      "label": "analyzeSkills()",
+      "degree": 7
+    },
+    {
+      "id": "packages_core_src_parser_loadskills",
+      "label": "loadSkills()",
+      "degree": 7
+    },
+    {
+      "id": "packages_core_src_types_providerprompt",
+      "label": "ProviderPrompt",
+      "degree": 7
+    },
+    {
+      "id": "packages_core_src_providers_anthropic_anthropicprovider",
+      "label": "AnthropicProvider",
+      "degree": 6
+    },
+    {
+      "id": "packages_core_src_providers_openai_compatible_openaicompatibleprovider",
+      "label": "OpenAICompatibleProvider",
+      "degree": 6
+    },
+    {
+      "id": "packages_core_src_types_skill",
+      "label": "Skill",
+      "degree": 6
+    }
+  ],
+  "surprises": [
+    {
+      "source": "analyze()",
+      "target": "analyzeSources()",
+      "source_files": [
+        "apps/server/src/server.ts",
+        "packages/core/src/engine.ts"
+      ],
+      "confidence": "INFERRED",
+      "relation": "calls",
+      "why": "inferred connection - not explicitly stated in source; connects across different repos/directories; bridges separate communities"
+    },
+    {
+      "source": "analyze()",
+      "target": "createProvider()",
+      "source_files": [
+        "apps/server/src/server.ts",
+        "packages/core/src/providers/factory.ts"
+      ],
+      "confidence": "INFERRED",
+      "relation": "calls",
+      "why": "inferred connection - not explicitly stated in source; connects across different repos/directories; bridges separate communities"
+    },
+    {
+      "source": "AnthropicProvider",
+      "target": "Provider",
+      "source_files": [
+        "packages/core/src/providers/factory.ts",
+        "packages/core/src/types.ts"
+      ],
+      "confidence": "INFERRED",
+      "relation": "implements",
+      "why": "inferred connection - not explicitly stated in source; peripheral node `AnthropicProvider` unexpectedly reaches hub `Provider`"
+    },
+    {
+      "source": "OpenAICompatibleProvider",
+      "target": "Provider",
+      "source_files": [
+        "packages/core/src/providers/factory.ts",
+        "packages/core/src/types.ts"
+      ],
+      "confidence": "INFERRED",
+      "relation": "implements",
+      "why": "inferred connection - not explicitly stated in source; peripheral node `OpenAICompatibleProvider` unexpectedly reaches hub `Provider`"
+    },
+    {
+      "source": "Entry",
+      "target": "SkillSource",
+      "source_files": [
+        "apps/web/src/App.tsx",
+        "apps/web/src/api.ts"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "references",
+      "why": "cross-file semantic connection"
+    }
+  ],
+  "tokens": {
+    "input": 3653,
+    "output": 8010
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "name": "@skillfight/server",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "bin": { "skillfight-server": "./dist/server.js" },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "start": "node --env-file-if-exists=../../.env --import=tsx/esm src/server.ts",
+    "dev": "node --env-file-if-exists=../../.env --import=tsx/esm --watch src/server.ts"
+  },
+  "dependencies": {
+    "@skillfight/core": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0"
+  }
+}

@@ -19,6 +19,20 @@ export interface Skill {
   path: string;
 }
 
+/** What kind of work a skill does — the model classifies each skill into one of
+ * these during analysis. Drives the avatar/class in the UIs. */
+export const ARCHETYPES = [
+  "blade", // direct action / execution
+  "mage", // content generation / creative
+  "guardian", // review / safety / validation
+  "scout", // search / research / discovery
+  "engineer", // build / code / tooling
+  "oracle", // data / analysis / insight
+  "courier", // communication / integration
+  "warden", // files / documents / organization
+] as const;
+export type Archetype = (typeof ARCHETYPES)[number];
+
 /** Per-skill analysis. */
 export interface SkillVerdict {
   name: string;
@@ -28,6 +42,20 @@ export interface SkillVerdict {
   cons: string[];
   /** 1 (nice-to-have) .. 5 (critical) — importance to solving its problem. */
   importance: number;
+  /** The skill's classified kind. Optional so verdicts from older runs still load. */
+  archetype?: Archetype;
+  /** Three domain-fitting stats the model names and scores 0–100 — e.g. a UI
+   * skill might get Style/Clarity, a security skill Defence/Coverage. Optional
+   * so verdicts from older runs still load. */
+  stats?: SkillStat[];
+}
+
+/** One named, scored trait of a skill. */
+export interface SkillStat {
+  /** Short name fitting the skill's domain, e.g. "Style", "Defence". */
+  name: string;
+  /** 0 (absent) .. 100 (exceptional). */
+  score: number;
 }
 
 /** A cluster of overlapping skills and the recommended resolution. */
@@ -54,6 +82,34 @@ export interface Verdict {
   skills: SkillVerdict[];
   conflicts: Conflict[];
   recommendations: string[];
+  usage?: TokenUsage;
+}
+
+/** How well one skill matches one task. `score` is the model's 0–100 confidence
+ * that this skill should fire for the task. */
+export interface TaskCandidate {
+  skill: string;
+  score: number;
+  reason: string;
+}
+
+/** One task routed against the skill roster: which skills would fire, and how
+ * confidently. `best`/`contested` are derived by the engine from `candidates`. */
+export interface TaskMatch {
+  task: string;
+  /** Candidates the model scored, sorted best-first. */
+  candidates: TaskCandidate[];
+  /** Top skill above the fire threshold, or null when nothing matches (a gap). */
+  best: string | null;
+  /** true when 2+ skills clear the threshold — an ambiguous trigger (a fight). */
+  contested: boolean;
+}
+
+/** The output of one routing run: does each task reach the right skill? */
+export interface RoutingReport {
+  matches: TaskMatch[];
+  /** Tasks no skill covered — coverage gaps in the library. */
+  gaps: string[];
   usage?: TokenUsage;
 }
 

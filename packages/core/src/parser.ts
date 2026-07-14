@@ -20,18 +20,23 @@ export function loadSkills(path: string): Skill[] {
 
 /** Parse one markdown file into a Skill, or null if it isn't a skill. */
 export function parseSkillFile(file: string): Skill | null {
-  const raw = readFileSync(file, "utf8");
-  const { data, content } = matter(raw);
+  return parseSkillSource(readFileSync(file, "utf8"), file);
+}
 
+/** Parse skill markdown from a string (no filesystem). Used by the API server
+ * for browser-uploaded content. `path` is the file/upload name used to derive a
+ * fallback skill name. Returns null when there's no frontmatter `description`. */
+export function parseSkillSource(raw: string, path = "skill.md"): Skill | null {
+  const { data, content } = matter(raw);
   const description = typeof data.description === "string" ? data.description.trim() : "";
   if (!description) return null; // not a skill
 
   return {
-    name: skillName(data.name, file),
+    name: skillName(data.name, path),
     description,
     allowedTools: normalizeTools(data["allowed-tools"] ?? data.allowedTools),
     body: content.trim(),
-    path: file,
+    path,
   };
 }
 

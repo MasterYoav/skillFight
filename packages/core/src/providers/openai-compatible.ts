@@ -10,6 +10,14 @@ export interface OpenAICompatOptions {
   baseURL?: string;
   /** API key; defaults to OPENAI_API_KEY. Local servers accept any non-empty value. */
   apiKey?: string;
+  /** OpenAI reasoning_effort (minimal | low | medium | high) — only sent when set. */
+  effort?: string;
+  /** Output token cap. Real OpenAI models reject anything past their own ceiling
+   * (~16K on gpt-4o), so keep that default for "openai"; local runtimes have no
+   * such limit and reasoning models (gpt-oss, deepseek-r1, o-series-alikes) can
+   * burn tens of thousands of tokens on hidden thinking before answering — give
+   * "local" much more room. */
+  maxTokens?: number;
 }
 
 /**
@@ -23,10 +31,14 @@ export class OpenAICompatibleProvider implements Provider {
   readonly name: string;
   private readonly client: OpenAI;
   private readonly model: string;
+  private readonly effort?: string;
+  private readonly maxTokens: number;
 
   constructor(opts: OpenAICompatOptions) {
     this.name = opts.name;
     this.model = opts.model;
+    this.effort = opts.effort;
+    this.maxTokens = opts.maxTokens ?? 16000;
     this.client = new OpenAI({
       baseURL: opts.baseURL,
       // The SDK throws on an empty key at construction; fall back to a placeholder
@@ -36,16 +48,43 @@ export class OpenAICompatibleProvider implements Provider {
   }
 
   async analyze(prompt: ProviderPrompt): Promise<AnalyzeResult> {
+    // Without an explicit cap, many local runtimes (Ollama's OpenAI shim
+    // especially) default to a small output length and silently truncate the
+    // verdict JSON mid-object. o-series/gpt-5 reject `max_tokens` in favor of
+    // `max_completion_tokens` — pick the field the model actually accepts.
+    const isReasoningModel = /^(o\d|gpt-5)/.test(this.model);
     const completion = await this.client.chat.completions.create({
       model: this.model,
       messages: [
         { role: "system", content: prompt.system },
         { role: "user", content: prompt.user },
       ],
+      ...(isReasoningModel ? { max_completion_tokens: this.maxTokens } : { max_tokens: this.maxTokens }),
       ...(prompt.jsonSchema ? { response_format: { type: "json_object" } } : {}),
+      ...(this.effort ? { reasoning_effort: this.effort as "low" | "medium" | "high" } : {}),
     });
+    assertNonEmpty(completion, this.name, this.model);
     return parseOpenAIResponse(completion);
   }
+}
+
+/** A reasoning model can spend its entire output budget on hidden thinking and
+ * never emit a final answer — that's an empty response, not bad JSON. Fail
+ * here with the reason so it doesn't surface downstream as a confusing
+ * "valid JSON: <nothing>". */
+export function assertNonEmpty(
+  completion: { choices: Array<{ message?: { content?: string | null }; finish_reason?: string | null }> },
+  providerName: string,
+  model: string,
+): void {
+  const choice = completion.choices[0];
+  if (choice?.message?.content?.trim()) return;
+  const reason = choice?.finish_reason ? ` (finish_reason: ${choice.finish_reason})` : "";
+  throw new Error(
+    `${providerName} model "${model}" returned an empty response${reason}. ` +
+      `Reasoning models can exhaust their output budget on hidden thinking before answering — ` +
+      `try a non-reasoning model, or a build/setting with more output headroom.`,
+  );
 }
 
 /** Pure mapping from a chat completion to AnalyzeResult. Usage fields are left
