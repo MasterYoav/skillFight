@@ -2,10 +2,6 @@
   <img src="media/banner.png" alt="skillfight banner" width="1000">
 </p>
 
-# skillfight
-
-**An arena where your Claude skills fight.**
-
 You've installed a pile of Claude skills. Some of them overlap — two skills that
 both want to fire for the same request, quietly fighting over Claude's behavior.
 skillfight points at your skills folder, finds the overlaps, and tells you who
