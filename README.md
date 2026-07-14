@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="media/banner.png" alt="skillfight banner" width="1000">
+</p>
+
 # skillfight
 
 **An arena where your Claude skills fight.**
