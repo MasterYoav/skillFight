@@ -2,14 +2,17 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import type { Verdict } from "@skillfight/core";
 import { analyze, listLocalModels, providersInfo, scanLocalSkills, type LocalModel, type ProviderChoice, type ProvidersInfo, type SkillSource } from "./api.js";
 import { readSkill, type RawSkill } from "./readSkill.js";
-import { makeWarrior, statusFor } from "./warrior.js";
+import { makeWarrior, statusFor, type Warrior } from "./warrior.js";
 import { WarriorCard } from "./WarriorCard.js";
+import { FusionCard } from "./FusionCard.js";
 import { Trials } from "./Trials.js";
 import { isMuted, toggleMute, sfx } from "./sound.js";
 import { Welcome, PatchNotes, APP_VERSION } from "./Dialogs.js";
 import { PixelSword, PixelTrophy } from "./Pixel.js";
 
 type Mode = "arena" | "trials";
+
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 interface Entry {
   source: SkillSource;
@@ -26,6 +29,7 @@ export function App() {
   const [cloudModel, setCloudModel] = useState<string | null>(null);
   const [effort, setEffort] = useState<string | null>(null); // null = provider default
   const [verdict, setVerdict] = useState<Verdict | null>(null);
+  const [revealCount, setRevealCount] = useState(0); // how many conflicts have resolved so far, mid-fight
   const [phase, setPhase] = useState<"idle" | "fighting">("idle");
   const [error, setError] = useState<string | null>(null);
   const [scanning, setScanning] = useState(false);
@@ -34,6 +38,7 @@ export function App() {
   const [dialog, setDialog] = useState<"welcome" | "patchnotes" | null>(null);
   const [prevVersion] = useState(() => localStorage.getItem("sf-version"));
   const fileInput = useRef<HTMLInputElement>(null);
+  const folderInput = useRef<HTMLInputElement>(null);
 
   // First paint: welcome unless dismissed; else patch notes when the version moved.
   useEffect(() => {
@@ -68,12 +73,18 @@ export function App() {
   const model = provider === "local" ? localModel?.id : cloudModel ?? undefined;
   const modelBaseURL = provider === "local" ? localModel?.baseURL : undefined;
 
+  // While fighting, only the conflicts resolved so far affect status — the rest
+  // of the roster keeps brawling until its own turn comes up. Once idle, the
+  // full verdict applies.
+  const revealed: Verdict | null =
+    verdict && phase === "fighting" ? { ...verdict, conflicts: verdict.conflicts.slice(0, revealCount) } : verdict;
+
   const warriors = useMemo(
     () =>
       roster.map((e) =>
-        makeWarrior(e.raw, verdict?.skills.find((s) => s.name === e.raw.name), statusFor(e.raw.name, verdict)),
+        makeWarrior(e.raw, verdict?.skills.find((s) => s.name === e.raw.name), statusFor(e.raw.name, revealed)),
       ),
-    [roster, verdict],
+    [roster, verdict, revealed],
   );
 
   function addEntries(next: Entry[]) {
@@ -111,28 +122,61 @@ export function App() {
       const entries: Entry[] = sources
         .map(s => { const raw = readSkill(s.name, s.content); return raw ? { source: s, raw } : null; })
         .filter(Boolean) as Entry[];
-      if (entries.length > 0) addEntries(entries);
-      else setError("No skills found in ~/.claude/skills — drag .md files to add them manually.");
+      if (entries.length > 0) {
+        addEntries(entries);
+      } else {
+        // Nothing at the default location (~/.claude/skills or wherever the
+        // server looked) — open the system file explorer straight to a folder
+        // picker so the user can point at their real skills folder.
+        setError("No skills found at the default location — pick your skills folder.");
+        folderInput.current?.click();
+      }
     } finally {
       setScanning(false);
     }
   }
+
+  // The melee soundtrack: one exchange of blows per lunge cycle.
+  useEffect(() => {
+    if (phase !== "fighting") return;
+    const id = setInterval(() => sfx.punch(), 600);
+    return () => clearInterval(id);
+  }, [phase]);
 
   async function fight() {
     if (roster.length < 2 || phase === "fighting") return;
     sfx.fight();
     setPhase("fighting");
     setFlashing(true);
-    setTimeout(() => setFlashing(false), 1100);
+    setTimeout(() => setFlashing(false), 700); // punchy intro, then reveal the brawl
     setError(null);
     setVerdict(null);
+    setRevealCount(0);
     try {
-      const [v] = await Promise.all([
-        analyze(roster.map((e) => e.source), provider, model, modelBaseURL, effort ?? undefined),
-        new Promise((r) => setTimeout(r, 900)), // let the arena erupt
-      ]);
-      setVerdict(v as Verdict);
-      sfx.verdict();
+      const v = (await analyze(
+        roster.map((e) => e.source),
+        provider,
+        model,
+        modelBaseURL,
+        effort ?? undefined,
+      )) as Verdict;
+      // The verdict schema, played out live: each conflict resolves as its own
+      // beat (KO / hug / fusion) while everyone else keeps brawling, instead of
+      // every card snapping to its outcome the instant the response lands.
+      setVerdict(v);
+      if (v.conflicts.length === 0) {
+        await sleep(900); // still a beat of melee before declaring peace
+      } else {
+        for (let i = 0; i < v.conflicts.length; i++) {
+          await sleep(750);
+          const kind = v.conflicts[i].verdict;
+          if (kind === "winner") sfx.ko();
+          else if (kind === "coexist") sfx.hug();
+          else sfx.fuse();
+          setRevealCount(i + 1);
+        }
+        await sleep(500); // beat before the aftermath panel appears
+      }
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
       sfx.error();
@@ -141,8 +185,9 @@ export function App() {
     }
   }
 
+  const resultsReady = phase === "idle" && verdict !== null;
   const u = verdict?.usage ?? {};
-  const fights = verdict?.conflicts.length ?? 0;
+  const fights = phase === "fighting" ? revealCount : (verdict?.conflicts.length ?? 0);
 
   return (
     <div
@@ -234,7 +279,7 @@ export function App() {
           )}
         </span>
         <button className="summon" onClick={summon} disabled={scanning}>
-          {scanning ? "SCANNING…" : "+ SUMMON"}
+          {scanning ? "SCANNING…" : "SUMMON"}
         </button>
         <input
           ref={fileInput}
@@ -244,12 +289,22 @@ export function App() {
           hidden
           onChange={(e) => e.target.files && ingest([...e.target.files])}
         />
+        <input
+          ref={folderInput}
+          type="file"
+          // @ts-expect-error — webkitdirectory/directory aren't in the DOM lib typings but every browser respects them
+          webkitdirectory=""
+          directory=""
+          multiple
+          hidden
+          onChange={(e) => e.target.files && ingest([...e.target.files])}
+        />
       </header>
 
       <p className="lede">
         {mode === "arena" ? (
           <>
-            Your Claude skill library, as a world of warriors. Drop a skills folder to summon more — then make
+            Your skills library, as a world of warriors. Drop a skills folder to summon more — then make
             them fight. {phase === "idle" && !verdict && "Overlapping skills battle; the rest live in peace."}
           </>
         ) : (
@@ -270,9 +325,31 @@ export function App() {
             </div>
           </div>
         ) : (
-          warriors.map((w) => (
-            <WarriorCard key={w.name} w={w} onRemove={() => removeEntry(w.name)} />
-          ))
+          <>
+            {warriors.map((w, i) => (
+              <WarriorCard
+                key={w.name}
+                w={w}
+                onRemove={() => removeEntry(w.name)}
+                // Still brawling until its own conflict resolves — then it
+                // holds its outcome pose while everyone else keeps fighting.
+                fighting={mode === "arena" && phase === "fighting" && w.status === "alive"}
+                flip={i % 2 === 1}
+              />
+            ))}
+            {mode === "arena" &&
+              revealed?.conflicts
+                .filter((c) => c.verdict === "merge" && c.merged)
+                .map((c) => (
+                  <FusionCard
+                    key={c.merged!.name}
+                    merged={c.merged!}
+                    parents={c.members
+                      .map((name) => warriors.find((w) => w.name === name))
+                      .filter(Boolean) as Warrior[]}
+                  />
+                ))}
+          </>
         )}
       </div>
 
@@ -304,7 +381,7 @@ export function App() {
 
       {error && <p className="err">✗ {error}</p>}
 
-      {verdict && (
+      {resultsReady && verdict && (
         <section className="aftermath">
           <h2>
             <PixelTrophy size={20} />
@@ -316,6 +393,9 @@ export function App() {
             <div className="duels">
               {verdict.conflicts.map((c, i) => (
                 <div key={i} className="match">
+                  {c.flags?.[0]?.startsWith("surfaced by recall") && (
+                    <span className="stampv found">FOUND</span>
+                  )}
                   {c.verdict === "winner" ? (
                     <>
                       <span className="stampv ko">K.O.</span>
@@ -342,7 +422,26 @@ export function App() {
                       </p>
                     </>
                   )}
+                  {c.flags && c.flags.length > 0 && (
+                    <p className="flagged" title={c.flags.join("\n")}>
+                      ⚠ unverified — {c.flags.length === 1 ? c.flags[0] : `${c.flags.length} checks failed`}
+                    </p>
+                  )}
                 </div>
+              ))}
+            </div>
+          )}
+          {verdict.missed && verdict.missed.length > 0 && (
+            <div className="missed">
+              <p className="missedhead">POSSIBLY MISSED</p>
+              <p className="dim">
+                these pairs seem to compete for the same requests but weren't flagged as conflicts — worth a manual look.
+              </p>
+              {verdict.missed.map((m, i) => (
+                <p key={i} className="missedpair">
+                  <code>{m.members[0]}</code> ~ <code>{m.members[1]}</code> — {Math.round(m.overlap * 100)}% likely to
+                  overlap in purpose, the analysis didn't group them.
+                </p>
               ))}
             </div>
           )}

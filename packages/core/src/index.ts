@@ -1,10 +1,14 @@
 export { ARCHETYPES } from "./types.js";
+export { ProviderConformanceTest, formatReport } from "./conformance.js";
+export type { ConformanceReport, ConformanceStep } from "./conformance.js";
 export type {
   Archetype,
   Skill,
   SkillStat,
+  MergedSkill,
   SkillVerdict,
   Conflict,
+  MissedPair,
   TokenUsage,
   Verdict,
   TaskCandidate,

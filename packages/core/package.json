@@ -14,7 +14,8 @@
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run",
-    "analyze": "tsx src/cli.ts"
+    "analyze": "tsx src/cli.ts",
+    "diagnose": "tsx src/diagnose.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.106.0",

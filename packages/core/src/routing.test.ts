@@ -48,9 +48,32 @@ describe("parseRouting", () => {
     expect(r.gaps).toContain("b");
   });
 
-  it("rejects malformed JSON and missing matches", () => {
+  it("rejects malformed JSON", () => {
     expect(() => parseRouting("nope", ["a"])).toThrow(/valid JSON/);
-    expect(() => parseRouting("{}", ["a"])).toThrow(/missing the `matches`/);
+  });
+
+  it("rejects a `matches` field with a genuinely wrong type, naming it", () => {
+    expect(() => parseRouting('{"matches":5}', ["a"])).toThrow(/matches.*number \(5\)/s);
+  });
+
+  it("degrades a missing `matches` to an all-gaps report instead of hard-failing", () => {
+    const r = parseRouting("{}", ["a", "b"]);
+    expect(r.matches).toHaveLength(2);
+    expect(r.gaps).toEqual(["a", "b"]);
+  });
+
+  it("wraps a single match object and a single candidate object into one-element arrays", () => {
+    const text = JSON.stringify({ matches: { task: "a", candidates: { skill: "git-helper", score: 90, reason: "x" } } });
+    const r = parseRouting(text, ["a"]);
+    expect(r.matches[0].best).toBe("git-helper");
+  });
+
+  // Regression: `reason` is rendered directly as a JSX child in the Trials UI;
+  // a non-string value there used to crash the whole page.
+  it("coerces a non-string candidate reason to text instead of leaking an object into the UI", () => {
+    const text = JSON.stringify({ matches: [{ task: "a", candidates: [{ skill: "x", score: 90, reason: { why: "y" } }] }] });
+    const r = parseRouting(text, ["a"]);
+    expect(typeof r.matches[0].candidates[0].reason).toBe("string");
   });
 });
 

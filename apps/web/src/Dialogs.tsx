@@ -5,12 +5,24 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
  * every user-visible change. */
 export const RELEASES = [
   {
+    version: "0.4.0",
+    date: "2026-07-14",
+    added: [
+      "Skills are now pixel-art fighters — a distinct Tekken-style character per class (blade, mage, guardian, scout, engineer, oracle, courier, warden)",
+      "Live battles: fighters trade blows while the verdict computes; losers get KO'd with dizzy stars, coexisting allies hug, and merges splice two fighters into a FUSION warrior — a downloadable merged skill written by the model",
+      "Pick your provider's model and reasoning effort; cloud pickers show 'API key needed' when a key is missing",
+    ],
+    fixed: [
+      "Local reasoning models (gpt-oss, DeepSeek): read reasoning fields, retry without JSON mode when a runtime returns nothing, and show what the model actually replied on a shape mismatch",
+      "The FIGHT! flash no longer swallows the melee on fast responses",
+    ],
+  },
+  {
     version: "0.3.0",
     date: "2026-07-13",
     added: [
       "Skill classes, levels, and stats are now learned from the analysis — a fresh summon is an unhatched egg until the arena appraises it",
       "Stats are named for each skill's own domain (Style for a UI skill, Defence for a security skill) instead of generic HP/ATK/DEF",
-      "Every skill type gets its own avatar (8 classes, from mage to warden)",
       "How-to-play welcome, and these patch notes",
       "Every class wears its own color, with fighter-select frames, pixel sword/trophy/scroll art, and a checkered arena floor",
     ],

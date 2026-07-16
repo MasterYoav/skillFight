@@ -70,4 +70,28 @@ export const sfx = {
   tick() {
     bleep(880, 0.04, 0, "square", 0.02);
   },
+  /** One exchange of blows in the melee. */
+  punch() {
+    bleep(110, 0.05, 0, "square", 0.04);
+    bleep(65, 0.09, 0.02, "sawtooth", 0.03);
+  },
+  /** Somebody hit the floor. */
+  ko() {
+    bleep(392, 0.09, 0, "square", 0.05);
+    bleep(262, 0.1, 0.09, "square", 0.05);
+    bleep(147, 0.3, 0.19, "square", 0.05);
+  },
+  /** Two skills make peace. */
+  hug() {
+    bleep(392, 0.1, 0, "triangle", 0.04);
+    bleep(494, 0.12, 0.08, "triangle", 0.04);
+    bleep(587, 0.18, 0.16, "triangle", 0.04);
+  },
+  /** A merge births a fusion warrior. */
+  fuse() {
+    bleep(220, 0.08, 0, "sawtooth", 0.03);
+    bleep(330, 0.08, 0.06, "sawtooth", 0.035);
+    bleep(494, 0.1, 0.12, "sawtooth", 0.04);
+    bleep(740, 0.24, 0.18, "triangle", 0.045);
+  },
 };
