@@ -1,5 +1,5 @@
 import { parseSkillSource } from "./parser.js";
-import { extractJson } from "./json.js";
+import { coerceArray, describe, extractJson, toStr } from "./json.js";
 import type {
   Provider,
   ProviderPrompt,
@@ -116,14 +116,25 @@ export function parseRouting(text: string, tasks: string[]): RoutingReport {
   } catch {
     throw new Error(`Provider did not return valid JSON: ${text.slice(0, 200)}`);
   }
-  const m = (raw as { matches?: unknown }).matches;
-  if (!Array.isArray(m)) throw new Error("Routing JSON is missing the `matches` array.");
+  // Local models often drift from "always an array" (a bare object instead of
+  // a one-element array) without getting the field name wrong — coerce it
+  // instead of hard-failing on the near-miss.
+  const m = coerceArray((raw as { matches?: unknown }).matches);
+  if (!m) {
+    throw new Error(
+      `Routing JSON has the wrong shape for \`matches\` (got ${describe((raw as { matches?: unknown }).matches)}). Model reply: ${text.slice(0, 400)}`,
+    );
+  }
 
   const byTask = new Map<string, TaskCandidate[]>();
-  for (const entry of m as { task?: string; candidates?: TaskCandidate[] }[]) {
+  for (const entry of m as { task?: string; candidates?: unknown }[]) {
     if (typeof entry?.task !== "string") continue;
-    const candidates = (entry.candidates ?? [])
-      .filter((c) => typeof c?.skill === "string" && typeof c?.score === "number")
+    const candidates = (coerceArray(entry.candidates) ?? [])
+      .filter((c) => c && typeof c === "object" && typeof (c as Record<string, unknown>).skill === "string" && typeof (c as Record<string, unknown>).score === "number")
+      .map((c) => {
+        const r = c as Record<string, unknown>;
+        return { skill: r.skill as string, score: r.score as number, reason: toStr(r.reason) };
+      })
       .sort((a, b) => b.score - a.score);
     byTask.set(entry.task, candidates);
   }

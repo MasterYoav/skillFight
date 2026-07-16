@@ -34,17 +34,20 @@ export class OpenAICompatibleProvider implements Provider {
   private readonly effort?: string;
   private readonly maxTokens: number;
 
-  constructor(opts: OpenAICompatOptions) {
-    this.name = opts.name;
-    this.model = opts.model;
-    this.effort = opts.effort;
-    this.maxTokens = opts.maxTokens ?? 16000;
-    this.client = new OpenAI({
+  constructor(
+    opts: OpenAICompatOptions,
+    client: OpenAI = new OpenAI({
       baseURL: opts.baseURL,
       // The SDK throws on an empty key at construction; fall back to a placeholder
       // so the real auth failure (401) surfaces at request time with a clear message.
       apiKey: opts.apiKey || process.env.OPENAI_API_KEY || "unset",
-    });
+    }),
+  ) {
+    this.name = opts.name;
+    this.model = opts.model;
+    this.effort = opts.effort;
+    this.maxTokens = opts.maxTokens ?? 16000;
+    this.client = client;
   }
 
   async analyze(prompt: ProviderPrompt): Promise<AnalyzeResult> {
@@ -53,47 +56,85 @@ export class OpenAICompatibleProvider implements Provider {
     // verdict JSON mid-object. o-series/gpt-5 reject `max_tokens` in favor of
     // `max_completion_tokens` — pick the field the model actually accepts.
     const isReasoningModel = /^(o\d|gpt-5)/.test(this.model);
-    const completion = await this.client.chat.completions.create({
-      model: this.model,
-      messages: [
-        { role: "system", content: prompt.system },
-        { role: "user", content: prompt.user },
-      ],
-      ...(isReasoningModel ? { max_completion_tokens: this.maxTokens } : { max_tokens: this.maxTokens }),
-      ...(prompt.jsonSchema ? { response_format: { type: "json_object" } } : {}),
-      ...(this.effort ? { reasoning_effort: this.effort as "low" | "medium" | "high" } : {}),
-    });
+    const request = (jsonMode: boolean) =>
+      this.client.chat.completions.create({
+        model: this.model,
+        messages: [
+          { role: "system", content: prompt.system },
+          { role: "user", content: prompt.user },
+        ],
+        ...(isReasoningModel ? { max_completion_tokens: this.maxTokens } : { max_tokens: this.maxTokens }),
+        ...(jsonMode && prompt.jsonSchema ? { response_format: { type: "json_object" } } : {}),
+        ...(this.effort ? { reasoning_effort: this.effort as "low" | "medium" | "high" } : {}),
+      });
+
+    let completion = await request(true);
+    // Some local runtimes (LM Studio serving gpt-oss especially) grammar-constrain
+    // generation under `response_format: json_object` and, for harmony-format
+    // reasoning models, can stop with zero output instead of erroring. Our prompt
+    // already asks for JSON in plain text, and extractJson recovers it from
+    // freeform prose — so retry once without JSON mode before giving up.
+    if (prompt.jsonSchema && isEmptyCompletion(completion)) {
+      completion = await request(false);
+    }
     assertNonEmpty(completion, this.name, this.model);
     return parseOpenAIResponse(completion);
   }
 }
 
+interface ChatMessage {
+  content?: string | null;
+  /** Some local runtimes (LM Studio, certain gpt-oss/DeepSeek-style builds)
+   * report the model's output through a reasoning-style field instead of
+   * `content` — even on a clean `finish_reason: "stop"`. */
+  reasoning_content?: string | null;
+  reasoning?: string | null;
+}
+
+/** The text a server actually gave us, checking every field a reasoning-model
+ * runtime might have used before calling it empty. */
+function resolveText(message?: ChatMessage): string {
+  if (message?.content?.trim()) return message.content;
+  if (message?.reasoning_content?.trim()) return message.reasoning_content;
+  if (message?.reasoning?.trim()) return message.reasoning;
+  return "";
+}
+
+function isEmptyCompletion(completion: { choices: Array<{ message?: ChatMessage }> }): boolean {
+  return resolveText(completion.choices[0]?.message) === "";
+}
+
 /** A reasoning model can spend its entire output budget on hidden thinking and
- * never emit a final answer — that's an empty response, not bad JSON. Fail
- * here with the reason so it doesn't surface downstream as a confusing
- * "valid JSON: <nothing>". */
+ * never emit a final answer, or (on some local runtimes) finish normally
+ * without ever populating a field we know to read. Either way that's an
+ * empty response, not bad JSON — fail here with the reason so it doesn't
+ * surface downstream as a confusing "valid JSON: <nothing>". */
 export function assertNonEmpty(
-  completion: { choices: Array<{ message?: { content?: string | null }; finish_reason?: string | null }> },
+  completion: { choices: Array<{ message?: ChatMessage; finish_reason?: string | null }> },
   providerName: string,
   model: string,
 ): void {
   const choice = completion.choices[0];
-  if (choice?.message?.content?.trim()) return;
-  const reason = choice?.finish_reason ? ` (finish_reason: ${choice.finish_reason})` : "";
+  if (resolveText(choice?.message)) return;
+  const reason = choice?.finish_reason;
+  const hint =
+    reason === "length"
+      ? "It likely exhausted its output budget on hidden reasoning before answering — try more output headroom."
+      : "Checked content, reasoning_content, and reasoning — all empty, even after retrying without JSON mode. " +
+        "This local server/quantization build isn't producing output for this prompt at all — try a different " +
+        "model build or local runtime.";
   throw new Error(
-    `${providerName} model "${model}" returned an empty response${reason}. ` +
-      `Reasoning models can exhaust their output budget on hidden thinking before answering — ` +
-      `try a non-reasoning model, or a build/setting with more output headroom.`,
+    `${providerName} model "${model}" returned an empty response${reason ? ` (finish_reason: ${reason})` : ""}. ${hint}`,
   );
 }
 
 /** Pure mapping from a chat completion to AnalyzeResult. Usage fields are left
  * undefined when the server doesn't report them (common for local models). */
 export function parseOpenAIResponse(completion: {
-  choices: Array<{ message?: { content?: string | null } }>;
+  choices: Array<{ message?: ChatMessage }>;
   usage?: { prompt_tokens?: number; completion_tokens?: number } | null;
 }): AnalyzeResult {
-  const text = completion.choices[0]?.message?.content ?? "";
+  const text = resolveText(completion.choices[0]?.message);
   const usage: TokenUsage = {
     inputTokens: completion.usage?.prompt_tokens,
     outputTokens: completion.usage?.completion_tokens,

@@ -69,6 +69,34 @@ export interface Conflict {
   rationale: string;
   /** Quotes from the skills' descriptions/bodies backing the rationale. */
   citations: string[];
+  /** Set when verdict === "merge": the model-written replacement skill,
+   * ready to be saved as a .md file in place of the members. */
+  merged?: MergedSkill;
+  /** Deterministic, zero-cost sanity checks run after parsing (no model call):
+   * a citation that doesn't appear in the skills it cites, or a "winner"/"merge"
+   * call between skills whose descriptions share almost no vocabulary. Absent
+   * when nothing looked off. */
+  flags?: string[];
+}
+
+/** The fusion of two or more merged skills — a complete skill the user can
+ * download and install as a replacement. */
+export interface MergedSkill {
+  /** kebab-case skill name. */
+  name: string;
+  /** Trigger description covering all members' triggers. */
+  description: string;
+  /** Markdown body combining the members' instructions. */
+  body: string;
+}
+
+/** A skill pair the semantic recall pass judged to compete for the same
+ * requests, that the first analysis never grouped into a conflict. */
+export interface MissedPair {
+  /** The two skill names the recall pass paired. */
+  members: string[];
+  /** 0..1 confidence the pair truly overlaps in meaning — hint strength. */
+  overlap: number;
 }
 
 /** Token usage for a run. Fields are optional — local models may report none. */
@@ -82,6 +110,11 @@ export interface Verdict {
   skills: SkillVerdict[];
   conflicts: Conflict[];
   recommendations: string[];
+  /** Skill pairs a semantic recall pass judged to compete for the same requests
+   * but the model's first analysis never placed in any conflict — a soft "did
+   * it miss this?" nudge. High-confidence pairs are escalated to a judge call
+   * and, if confirmed, promoted into `conflicts` instead of appearing here. */
+  missed?: MissedPair[];
   usage?: TokenUsage;
 }
 

@@ -187,7 +187,7 @@ body::after {
 /* ── the brain zone: pickers wear the chosen provider's colors ──
    anthropic = claude orange / white text; openai = white / black text;
    local = full-spectrum (it's the colorful, anything-goes option) */
-.brainzone { display: inline-flex; align-items: center; gap: 8px; }
+.brainzone { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 .brain-anthropic .mode.on {
   background: #cf6a3f;
   color: #fff;
@@ -376,14 +376,12 @@ body::after {
 .wremove:hover { background: rgba(255, 92, 106, 0.18); color: var(--red); }
 
 .sprite {
-  margin: 0 auto 6px;
-  font-size: 15px;
-  line-height: 1.15;
-  width: max-content;
+  display: block;
+  margin: 2px auto 8px;
   animation: bob 3.2s ease-in-out infinite;
   filter: drop-shadow(0 0 8px color-mix(in srgb, var(--accent) 40%, transparent));
+  transform-origin: center bottom; /* KO fall / lunge pivot from the feet */
 }
-.sprite .weapon { font-weight: 700; filter: brightness(1.4); }
 
 .wname {
   font-family: var(--pixel);
@@ -448,6 +446,157 @@ body::after {
   margin: 8px 0 2px;
 }
 
+/* ── the melee: cards trade blows while the verdict computes ──
+   even-index cards lunge right, odd (flip) cards lunge left a half-beat
+   later, so adjacent warriors read as exchanging punches */
+.warrior.brawl .sprite {
+  animation: lunge-r 0.6s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+}
+.warrior.brawl.flip .sprite {
+  animation: lunge-l 0.6s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+  animation-delay: 0.3s;
+}
+/* impact spark on the struck edge */
+.warrior.brawl::after {
+  content: "✦";
+  position: absolute;
+  top: 34%;
+  right: -4px;
+  font-size: 20px;
+  color: var(--yellow);
+  text-shadow: 0 0 12px color-mix(in srgb, var(--yellow) 70%, transparent);
+  opacity: 0;
+  pointer-events: none;
+  animation: spark 0.6s infinite;
+}
+.warrior.brawl.flip::after {
+  right: auto;
+  left: -4px;
+  animation-delay: 0.3s;
+}
+@keyframes lunge-r {
+  0%, 100% { transform: translateX(0) rotate(0deg); }
+  28% { transform: translateX(16px) rotate(7deg); }
+  42% { transform: translateX(11px) rotate(4deg); }
+  60% { transform: translateX(-3px) rotate(-2deg); }
+}
+@keyframes lunge-l {
+  0%, 100% { transform: translateX(0) rotate(0deg); }
+  28% { transform: translateX(-16px) rotate(-7deg); }
+  42% { transform: translateX(-11px) rotate(-4deg); }
+  60% { transform: translateX(3px) rotate(2deg); }
+}
+@keyframes spark {
+  0%, 24%, 52%, 100% { opacity: 0; transform: scale(0.6) rotate(0deg); }
+  30% { opacity: 1; transform: scale(1.5) rotate(25deg); }
+  44% { opacity: 0.7; transform: scale(1) rotate(45deg); }
+}
+
+/* ── coexist: allies hug it out ── */
+.status-friends {
+  border-color: color-mix(in srgb, var(--cyan) 40%, var(--line));
+}
+.status-friends .sprite { animation: lean-r 2.6s ease-in-out infinite; }
+.status-friends.flip .sprite { animation: lean-l 2.6s ease-in-out infinite; }
+.status-friends::after {
+  content: "♥";
+  position: absolute;
+  top: 30%;
+  right: 10px;
+  color: var(--red);
+  font-size: 15px;
+  text-shadow: 0 0 10px color-mix(in srgb, var(--red) 60%, transparent);
+  opacity: 0;
+  pointer-events: none;
+  animation: heart 2.6s ease-in-out infinite;
+}
+.status-friends.flip::after { right: auto; left: 10px; animation-delay: 1.3s; }
+@keyframes lean-r {
+  0%, 100% { transform: translateX(0) rotate(0deg); }
+  50% { transform: translateX(8px) rotate(5deg); }
+}
+@keyframes lean-l {
+  0%, 100% { transform: translateX(0) rotate(0deg); }
+  50% { transform: translateX(-8px) rotate(-5deg); }
+}
+@keyframes heart {
+  0%, 30%, 100% { opacity: 0; transform: translateY(0) scale(0.7); }
+  50% { opacity: 1; transform: translateY(-14px) scale(1.15); }
+  70% { opacity: 0; transform: translateY(-26px) scale(0.9); }
+}
+
+/* ── K.O.: dizzy stars orbit the fallen ── */
+.dizzy {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 13px;
+  letter-spacing: 4px;
+  color: var(--yellow);
+  text-shadow: 0 0 10px color-mix(in srgb, var(--yellow) 60%, transparent);
+  opacity: 0;
+  pointer-events: none;
+  animation: dizzy 1.8s linear infinite;
+  z-index: 1;
+}
+@keyframes dizzy {
+  0% { opacity: 0.9; transform: translateX(-50%) rotate(-8deg); }
+  25% { transform: translateX(-46%) rotate(6deg); }
+  50% { opacity: 0.5; transform: translateX(-50%) rotate(-6deg); }
+  75% { transform: translateX(-54%) rotate(8deg); }
+  100% { opacity: 0.9; transform: translateX(-50%) rotate(-8deg); }
+}
+
+/* ── the fusion: a newborn skill steps into the arena ── */
+.warrior.fusionborn {
+  border-style: solid;
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--accent2, var(--accent)));
+  background:
+    linear-gradient(160deg,
+      color-mix(in srgb, var(--accent) 12%, transparent),
+      color-mix(in srgb, var(--accent2, var(--accent)) 12%, transparent) 70%),
+    var(--panel);
+  animation: fusion-birth 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+  box-shadow:
+    0 0 26px color-mix(in srgb, var(--accent) 22%, transparent),
+    0 0 26px color-mix(in srgb, var(--accent2, var(--accent)) 16%, transparent);
+}
+.warrior.fusionborn .wname {
+  color: color-mix(in srgb, var(--accent) 50%, var(--accent2, var(--accent)));
+}
+.sprite.fusion { animation: bob 2.4s ease-in-out infinite; filter: none; }
+.archchip.fusionchip {
+  background: color-mix(in srgb, var(--accent) 50%, var(--accent2, var(--accent)));
+  box-shadow: 0 0 12px color-mix(in srgb, var(--accent) 30%, var(--accent2, var(--accent)));
+}
+@keyframes fusion-birth {
+  0% { opacity: 0; transform: scale(0.3); filter: brightness(3); }
+  60% { opacity: 1; transform: scale(1.08); }
+  100% { transform: scale(1); filter: brightness(1); }
+}
+.download {
+  font-family: var(--pixel);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: #0a0c10;
+  background: var(--green);
+  border: none;
+  border-radius: 6px;
+  padding: 7px 10px 5px;
+  margin-top: 8px;
+  cursor: pointer;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  box-shadow: 0 0 14px color-mix(in srgb, var(--green) 35%, transparent);
+  transition: filter 0.15s;
+}
+.download:hover { filter: brightness(1.15); }
+.download:focus-visible { outline: 2px solid var(--fg); outline-offset: 2px; }
+
 /* status stamps + battle outcomes */
 .vtag {
   position: absolute;
@@ -465,6 +614,7 @@ body::after {
 .vtag.won { color: #0a0c10; background: var(--green); box-shadow: 0 0 14px color-mix(in srgb, var(--green) 50%, transparent); }
 .vtag.lost { color: #fff; background: var(--red); }
 .vtag.merged { color: #0a0c10; background: var(--yellow); }
+.vtag.friends { color: #0a0c10; background: var(--cyan); }
 
 .status-won {
   border-color: color-mix(in srgb, var(--green) 45%, var(--line));
@@ -511,6 +661,13 @@ body::after {
 .hint { color: var(--dim); }
 
 .err { color: var(--red); margin: 0; }
+
+.flagged {
+  margin: 0.35em 0 0;
+  font-size: 0.8em;
+  color: var(--amber, #d9a441);
+  cursor: help;
+}
 
 /* ── FIGHT flash overlay ────────────────────────────────── */
 .flash {
@@ -581,11 +738,22 @@ body::after {
 .stampv.ko { color: #fff; background: var(--red); }
 .stampv.fusion { color: #0a0c10; background: var(--yellow); }
 .stampv.truce { color: #0a0c10; background: var(--cyan); }
+.stampv.found { color: #0a0c10; background: var(--amber, #d9a441); }
 .duel { margin: 0; }
 .win { color: var(--green); }
 .mrg { color: var(--yellow); }
 .cox { color: var(--cyan); }
 .dim { color: var(--dim); }
+.missed { margin: 12px 0 0; padding-top: 10px; border-top: 1px dashed var(--line); }
+.missedhead {
+  font-family: var(--pixel);
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: var(--dim);
+  margin: 0 0 6px;
+}
+.missedpair { margin: 4px 0 0; font-size: 0.85em; color: var(--dim); }
+.missedpair code { color: var(--fg); }
 .recs { color: var(--fg); margin: 12px 0 0; padding-left: 18px; }
 .recs li { margin: 3px 0; }
 .recs li::marker { color: var(--cyan); }
@@ -791,9 +959,11 @@ body::after {
 @keyframes flicker { 0%, 82% { opacity: 1; } 83%, 100% { opacity: 0.75; } }
 
 @media (prefers-reduced-motion: reduce) {
-  *, .sprite, .warrior, .world.erupting, .flash span { animation: none !important; }
+  *, *::before, *::after { animation: none !important; }
   .flash { animation: none; }
   .warrior, .fight { transition: none; }
+  /* effects whose visibility is animation-driven stay hidden without motion */
+  .warrior.brawl::after, .status-friends::after, .dizzy { opacity: 0; }
 }
 
 /* ── responsive ─────────────────────────────────────────── */

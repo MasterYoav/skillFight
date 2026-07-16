@@ -1,7 +1,7 @@
 import type { Archetype, SkillStat, SkillVerdict, Verdict } from "@skillfight/core";
 import type { RawSkill } from "./readSkill.js";
 
-export type WarriorStatus = "alive" | "won" | "lost" | "merged";
+export type WarriorStatus = "alive" | "won" | "lost" | "merged" | "friends";
 
 /** A warrior on the roster. Class, level, and stats are UNKNOWN until the model
  * has analyzed the skill — a fresh summon is an unhatched egg; the arena fight
@@ -91,6 +91,7 @@ export function statusFor(name: string, verdict: Verdict | null): WarriorStatus 
     if (!c.members.includes(name)) continue;
     if (c.verdict === "merge") return "merged";
     if (c.verdict === "winner") return c.winner === name ? "won" : "lost";
+    if (c.verdict === "coexist") return "friends"; // they hug it out
   }
-  return "alive"; // coexist or unconflicted
+  return "alive"; // unconflicted
 }

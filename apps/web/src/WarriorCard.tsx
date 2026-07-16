@@ -1,16 +1,36 @@
 import type { Warrior } from "./warrior.js";
 import { Sprite } from "./Sprite.js";
 
-const TAG: Record<string, string> = { won: "WINNER", lost: "K.O.", merged: "MERGED" };
+const TAG: Record<string, string> = { won: "WINNER", lost: "K.O.", merged: "FUSED", friends: "ALLIES" };
 
-export function WarriorCard({ w, onRemove }: { w: Warrior; onRemove?: () => void }) {
+export function WarriorCard({
+  w,
+  onRemove,
+  fighting = false,
+  flip = false,
+}: {
+  w: Warrior;
+  onRemove?: () => void;
+  /** True while the arena verdict is being computed — the roster brawls. */
+  fighting?: boolean;
+  /** Alternates lunge direction so adjacent cards trade blows. */
+  flip?: boolean;
+}) {
   const a = w.appraisal;
+  const cls = [
+    "warrior",
+    `status-${w.status}`,
+    a ? "" : "unappraised",
+    fighting ? "brawl" : "",
+    flip ? "flip" : "",
+  ].filter(Boolean).join(" ");
   return (
-    <div className={`warrior status-${w.status} ${a ? "" : "unappraised"}`} style={{ ["--accent" as string]: w.color }}>
+    <div className={cls} style={{ ["--accent" as string]: w.color }}>
       {onRemove && (
         <button className="wremove" onClick={onRemove} aria-label={`Remove ${w.name}`}>×</button>
       )}
-      <Sprite w={w} />
+      {w.status === "lost" && <span className="dizzy" aria-hidden="true">★ ☆ ★</span>}
+      <Sprite w={w} fighting={fighting} />
       <div className="wname">{w.name}</div>
       {a ? (
         <div className="wmeta">
@@ -37,7 +57,7 @@ export function WarriorCard({ w, onRemove }: { w: Warrior; onRemove?: () => void
       ) : (
         <p className="unhatched">unhatched — FIGHT to appraise</p>
       )}
-      {w.status !== "alive" && <div className={`vtag ${w.status}`}>{TAG[w.status]}</div>}
+      {w.status !== "alive" && !fighting && <div className={`vtag ${w.status}`}>{TAG[w.status]}</div>}
     </div>
   );
 }
